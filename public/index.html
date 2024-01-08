@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>
+        Tracking Data Log
+    </h1>
+
+    <button id="find-me">Show my location</button><br />
+    <p id="status"></p>
+    <a id="map-link" target="_blank"></a>
+
+    <button id = "submit">Submit</button>
+
+    <script>
+        function geoFindMe() {
+  const status = document.querySelector("#status");
+  const mapLink = document.querySelector("#map-link");
+
+  mapLink.href = "";
+  mapLink.textContent = "";
+
+  function success(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    status.textContent = "";
+    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+  }
+
+  function error() {
+    status.textContent = "Unable to retrieve your location";
+  }
+
+  if (!navigator.geolocation) {
+    status.textContent = "Geolocation is not supported by your browser";
+  } else {
+    status.textContent = "Locating…";
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+}
+
+document.querySelector("#find-me").addEventListener("click", geoFindMe);
+
+//         if ("geolocation" in navigator) {
+//                  /* geolocation is available */
+//                  console.log('geolocation available');
+//                  navigator.geolocation.getCurrentPosition((position) => {
+//                  document.getElementById("latitude").textContent = position.coords.latitude;
+//                  document.getElementById("longitude").textContent = position.coords.longitude;
+//                 console.log( position.coords.latitude);
+//                 console.log( position.coords.longitude);
+// });
+//         } else {
+//                /* geolocation IS NOT available */
+//                console.log('geolocation not available');
+//         }
+
+if ('geolocation' in navigator) {
+        console.log('geolocation available');
+        navigator.geolocation.getCurrentPosition(async position => {
+          lat = position.coords.latitude;
+          lon = position.coords.longitude;
+          document.getElementById('latitude').textContent = lat;
+          document.getElementById('longitude').textContent = lon;
+      const data = { lat, lon };
+             const options = {
+                   method: 'POST',
+                   headers: {
+                        'Content-Type': 'application/json'
+          },
+            body: JSON.stringify(data)
+        };
+        const response = await fetch('/api', options);
+        const json = await response.json(); // this will be read as json
+        console.log(json);
+
+
+
+
+        });
+      } else {
+        console.log('geolocation not available');
+      }
+        
+    </script>
+
+<p>latitude: <span id='latitude'></span>&deg;<br /></p>
+<p>longitude <span id='longitude'></span>&deg;</p>
+
+</body>
+</html>
